@@ -5,7 +5,6 @@ import com.jj.social.dto.CMRespDto;
 import com.jj.social.dto.UserUpdateDto;
 import com.jj.social.entity.User;
 import com.jj.social.handler.exception.CustomValidationApiException;
-import com.jj.social.handler.exception.CustomValidationException;
 import com.jj.social.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,7 @@ import java.util.Map;
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-public class ApiController {
+public class UserApiController {
     private final UserService userService;
 
     @PutMapping("/user/{id}")
