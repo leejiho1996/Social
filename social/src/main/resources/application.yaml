@@ -36,8 +36,9 @@ spring:
     user:
       name: test
       password: 1234
-  file:
-    path: C:/social/springbootwork/upload/
+
+file:
+  path: C:/social/springbootwork/upload/
 
 logging:
   level:
