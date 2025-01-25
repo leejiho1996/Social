@@ -1,24 +1,38 @@
 package com.jj.social.controller;
 
 import com.jj.social.auth.PrincipalDetails;
-import com.jj.social.dto.UserUpdateDto;
+import com.jj.social.dto.UserProfileDto;
+import com.jj.social.entity.Image;
+import com.jj.social.entity.User;
+import com.jj.social.service.ImageService;
+import com.jj.social.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Slf4j
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
 
+    private final UserService userService;
+    private final ImageService imageService;
+
     @GetMapping("/{id}")
-    public String profile() {
+    public String profile(@PathVariable Long id, Model model,
+                          @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        UserProfileDto userProfile = userService.getUserProfileDto(id, principalDetails);
+
+        model.addAttribute("userDto", userProfile);
+        model.addAttribute("images", userProfile.getImageList());
         return "user/profile";
     }
 

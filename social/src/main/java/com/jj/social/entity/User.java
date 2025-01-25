@@ -1,5 +1,6 @@
 package com.jj.social.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
+@ToString(exclude = "images")
 @Data
 public class User {
 
@@ -41,6 +42,10 @@ public class User {
     private String profileImageUri;
 
     private String role;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Image> images;
 
     private LocalDateTime createDate;
 

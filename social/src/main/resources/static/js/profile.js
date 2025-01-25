@@ -11,13 +11,47 @@
  */
 
 // (1) 유저 프로파일 페이지 구독하기, 구독취소
-function toggleSubscribe(obj) {
+function toggleSubscribe(toUserId, obj) {
+
+	const subscribeCountSpan = document.querySelector(".subscribe_cnt");
+
 	if ($(obj).text() === "구독취소") {
-		$(obj).text("구독하기");
-		$(obj).toggleClass("blue");
+		$.ajax({
+			type: "delete",
+			url: "/api/subscribe/" + toUserId,
+			dataType: "json"
+		}).done(res => {
+			$(obj).text("구독하기");
+			$(obj).toggleClass("blue");
+
+			// 구독자 수 갱신
+			if (subscribeCountSpan) {
+				currentCount = parseInt(subscribeCountSpan.texContent, 10);
+				subscribeCountSpan.textContent = currentCount > 0 ? currentCount - 1 : 0;
+			}
+
+		}).fail(error => {
+			console.log("구독취소 실패", error)
+		})
+
 	} else {
-		$(obj).text("구독취소");
-		$(obj).toggleClass("blue");
+		$.ajax({
+			type: "post",
+			url: "/api/subscribe/" + toUserId,
+			dataType: "json"
+		}).done(res => {
+			$(obj).text("구독취소");
+			$(obj).toggleClass("blue");
+
+			// 구독 수 증가
+			if (subscribeCountSpan) {
+				let currentCount = parseInt(subscribeCountSpan.textContent, 10);
+				subscribeCountSpan.textContent = currentCount + 1;
+			}
+
+		}).fail(error => {
+			console.log("구독 실패", error)
+		});
 	}
 }
 
@@ -89,6 +123,7 @@ function modalClose() {
 	$(".modal-subscribe").css("display", "none");
 	location.reload();
 }
+
 
 
 
