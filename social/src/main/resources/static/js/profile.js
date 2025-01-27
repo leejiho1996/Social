@@ -24,12 +24,6 @@ function toggleSubscribe(toUserId, obj) {
 			$(obj).text("구독하기");
 			$(obj).toggleClass("blue");
 
-			// 구독자 수 갱신
-			if (subscribeCountSpan) {
-				currentCount = parseInt(subscribeCountSpan.texContent, 10);
-				subscribeCountSpan.textContent = currentCount > 0 ? currentCount - 1 : 0;
-			}
-
 		}).fail(error => {
 			console.log("구독취소 실패", error)
 		})
@@ -43,12 +37,6 @@ function toggleSubscribe(toUserId, obj) {
 			$(obj).text("구독취소");
 			$(obj).toggleClass("blue");
 
-			// 구독 수 증가
-			if (subscribeCountSpan) {
-				let currentCount = parseInt(subscribeCountSpan.textContent, 10);
-				subscribeCountSpan.textContent = currentCount + 1;
-			}
-
 		}).fail(error => {
 			console.log("구독 실패", error)
 		});
@@ -56,24 +44,48 @@ function toggleSubscribe(toUserId, obj) {
 }
 
 // (2) 구독자 정보  모달 보기
-function subscribeInfoModalOpen() {
+function subscribeInfoModalOpen(pageUserId) {
 	$(".modal-subscribe").css("display", "flex");
+
+	$.ajax({
+		url : `/api/user/${pageUserId}/subscribe`,
+		dataType : "json"
+	}).done(res => {
+		console.log("성공", res.data)
+
+		res.data.forEach((u) => {
+			let item = getSubscribeModalItem(u);
+			$("#subscribeModalList").append(item);
+		});
+
+	}).fail(error => {
+		console.log("실패", error)
+	})
 }
 
-function getSubscribeModalItem() {
+function getSubscribeModalItem(u) {
+	let item = `
+    <div class="subscribe__item" id="subscribeModalItem-1">
+    <div class="subscribe__img">
+        <img src="/upload/${u.profileImageUrl}" onerror="this.src='/images/person.jpeg'" />
+    </div>
+    <div class="subscribe__text">
+        <h2>${u.nickname}</h2>
+    </div>
+    <div class="subscribe__btn">`;
 
-}
-
-
-// (3) 구독자 정보 모달에서 구독하기, 구독취소
-function toggleSubscribeModal(obj) {
-	if ($(obj).text() === "구독취소") {
-		$(obj).text("구독하기");
-		$(obj).toggleClass("blue");
-	} else {
-		$(obj).text("구독취소");
-		$(obj).toggleClass("blue");
+	if (!u.equalUserState) { // 로그인 유저와 모달의 유저가 동일 인물이 아닐때
+		if (u.subscribeState) {
+			item += `<button class="cta blue" onClick="toggleSubscribe(${u.id}, this)">구독취소</button>`
+		} else {
+			item += `<button class="cta" onClick="toggleSubscribe(${u.id}, this)">구독하기</button>`
+		}
 	}
+
+
+	item += `</div>
+</div>`;
+	return item;
 }
 
 // (4) 유저 프로파일 사진 변경 (완)

@@ -44,11 +44,13 @@ public class UserService {
         User user = userRepository.findById(pageUserId)
                 .orElseThrow(() -> new CustomException("존재하지 않는 회원입니다."));
         Long requestUserId = principalDetails.getUser().getId();
+
         UserProfileDto userProfileDto = new UserProfileDto(user);
         userProfileDto.setImageCount(user.getImages().size());
         userProfileDto.setPageOwnerState(pageUserId.equals(requestUserId));
         userProfileDto.setSubscribeCount(subscribeRepository.countSubscribeBy(pageUserId)); // 구독자 수
         userProfileDto.setSubscribeState(subscribeRepository.getSubScribeState(requestUserId, pageUserId) == 1); // 현재 요청한 사람과 구독여부
+
         return userProfileDto;
     }
 }
