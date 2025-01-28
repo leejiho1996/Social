@@ -11,6 +11,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,9 +42,9 @@ public class ImageService {
         UUID uuid = UUID.randomUUID();
         String originFilename = ImageDto.getFile().getOriginalFilename();
         String extension = originFilename.substring(originFilename.lastIndexOf("."));
-        String imgName = uuid.toString() + "." + extension; // UUID화 된 이미지 이름
+        String imgName = uuid.toString() + extension; // UUID화 된 이미지 이름
 
-        String imgFilePath = filePath + "/" + imgName;
+        String imgFilePath = filePath + imgName;
 
         try {
             FileOutputStream fos = new FileOutputStream(imgFilePath);
@@ -57,7 +58,7 @@ public class ImageService {
         imageRepository.save(image);
     }
 
-    public List<Image> loadImageStory(Long principalId) {
+    public List<Image> loadImageStory(Long principalId, Pageable pageable) {
         JPAQuery<Image> query = new JPAQuery<>(em);
 
        return query.select(image)
@@ -67,6 +68,8 @@ public class ImageService {
                                 .from(subscribe)
                                 .where(subscribe.fromUser.id.eq(principalId))
                 ))
-                .fetch();
+               .offset(pageable.getOffset())
+               .limit(pageable.getPageSize())
+               .fetch();
     }
 }

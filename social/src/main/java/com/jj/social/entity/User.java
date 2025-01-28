@@ -22,6 +22,7 @@ public class User {
     @Column(unique = true)
     private String username; // 아이디
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password; // 패스워드
 
