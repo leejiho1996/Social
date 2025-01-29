@@ -8,6 +8,18 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "likes_uk",
+                        columnNames = {
+                                "imageId",
+                                "userId"
+                        }
+                )
+        }
+)
 @Entity
 @Builder
 @NoArgsConstructor

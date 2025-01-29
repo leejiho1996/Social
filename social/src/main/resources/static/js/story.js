@@ -34,10 +34,10 @@ function getStoryItem(image) {
 	<div class="story-list__item">
 		<div class="sl__item__header">
 			<div>
-				<img class="profile-image" src="/upload/${image.user.profileImageUrl}"
+				<img class="profile-image" src="/upload/${image.profileImageUrl}"
 					 onerror="this.src='/images/person.jpeg'" />
 			</div>
-			<div>${image.user.username}</div>
+			<div>${image.username}</div>
 		</div>
 
 		<div class="sl__item__img">
@@ -47,12 +47,19 @@ function getStoryItem(image) {
 		<div class="sl__item__contents">
 			<div class="sl__item__contents__icon">
 
-				<button>
-					<i class="fas fa-heart active" id="storyLikeIcon-${image.id}" onclick="toggleLike(${image.id})"></i>
+				<button>`;
+
+				if (image.likeState) {
+					item += `<i class="fas fa-heart active" id="storyLikeIcon-${image.id}" onclick="toggleLike(${image.id})"></i>`;
+				} else {
+					item += `<i class="far fa-heart" id="storyLikeIcon-${image.id}" onclick="toggleLike(${image.id})"></i>`;
+				}
+				item += `		
+				
 				</button>
 			</div>
 
-			<span class="like"><b id="storyLikeCount-1">3 </b>likes</span>
+			<span class="like"><b id="storyLikeCount-${image.id}">${image.likeCount}</b>likes</span>
 
 			<div class="sl__item__contents__content">
 				<p>등산하는 것이 너무 재밌네요</p>
@@ -85,7 +92,6 @@ function getStoryItem(image) {
 // (2) 스토리 스크롤 페이징하기
 $(window).scroll(() => {
 	let checkNum = $(window).scrollTop() - ($(document).height() - $(window).height());
-	console.log("checkNum : ", checkNum);
 
 	if (checkNum < 1 && checkNum > -1) {
 		page++;
@@ -98,13 +104,42 @@ $(window).scroll(() => {
 function toggleLike(imageId) {
 	let likeIcon = $(`#storyLikeIcon-${imageId}`);
 	if (likeIcon.hasClass("far")) {
-		likeIcon.addClass("fas");
-		likeIcon.addClass("active");
-		likeIcon.removeClass("far");
+		$.ajax({
+			type:"post",
+			url:`/api/image/${imageId}/likes`,
+			dataType:"json"
+		}).done(res => {
+			let likeCountStr = $(`#storyLikeCount-${imageId}`).text();
+			let likeCount = Number(likeCountStr) + 1;
+			$(`#storyLikeCount-${imageId}`).text(likeCount);
+
+			console.log(likeCount)
+
+			likeIcon.addClass("fas");
+			likeIcon.addClass("active");
+			likeIcon.removeClass("far");
+		}).fail(error => {
+			cosole.log("오류", error);
+		})
+
 	} else {
-		likeIcon.removeClass("fas");
-		likeIcon.removeClass("active");
-		likeIcon.addClass("far");
+		$.ajax({
+			type:"delete",
+			url:`/api/image/${imageId}/likes`,
+			dataType:"json"
+		}).done(res => {
+			let likeCountStr = $(`#storyLikeCount-${imageId}`).text();
+			let likeCount = Number(likeCountStr) - 1;
+			$(`#storyLikeCount-${imageId}`).text(likeCount);
+
+			console.log(likeCount)
+
+			likeIcon.removeClass("fas");
+			likeIcon.removeClass("active");
+			likeIcon.addClass("far");
+		}).fail(error => {
+			cosole.log("오류", error);
+		})
 	}
 }
 

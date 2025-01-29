@@ -2,6 +2,7 @@ package com.jj.social.controller.api;
 
 import com.jj.social.auth.PrincipalDetails;
 import com.jj.social.dto.CMRespDto;
+import com.jj.social.dto.ImageStoryDto;
 import com.jj.social.entity.Image;
 import com.jj.social.service.ImageService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class ImageApiController {
     @GetMapping("/api/image")
     public ResponseEntity<?> imageStory(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                         @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        List<Image> images = imageService.loadImageStory(principalDetails.getUser().getId(), pageable);
+        List<ImageStoryDto> images = imageService.loadImageStory(principalDetails.getUser().getId(), pageable);
         return new ResponseEntity<>(
                 new CMRespDto(1, "성공", images), HttpStatus.OK);
     }
