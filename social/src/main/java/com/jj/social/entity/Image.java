@@ -27,7 +27,7 @@ public class Image {
 
     private String imgName;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private User user;
 

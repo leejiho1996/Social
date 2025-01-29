@@ -30,11 +30,11 @@ public class Subscribe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fromUserId")
     private User fromUser; // 구독자
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "toUserId")
     private User toUser; // 피구독자
 
