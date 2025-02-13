@@ -1,9 +1,7 @@
 package com.jj.social.controller;
 
 import com.jj.social.auth.PrincipalDetails;
-import com.jj.social.dto.UserProfileDto;
-import com.jj.social.entity.Image;
-import com.jj.social.entity.User;
+import com.jj.social.dto.user.UserProfileDto;
 import com.jj.social.service.ImageService;
 import com.jj.social.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.List;
 
 @Slf4j
 @Controller

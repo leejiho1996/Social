@@ -1,17 +1,19 @@
 package com.jj.social.service;
 
 import com.jj.social.auth.PrincipalDetails;
-import com.jj.social.dto.UserProfileDto;
+import com.jj.social.dto.image.ProfileImageDto;
+import com.jj.social.dto.user.UserProfileDto;
 import com.jj.social.entity.User;
 import com.jj.social.handler.exception.CustomException;
 import com.jj.social.handler.exception.CustomValidationApiException;
-import com.jj.social.handler.exception.CustomValidationException;
-import com.jj.social.repository.SubscribeRepository;
+import com.jj.social.repository.ImageRepository;
 import com.jj.social.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final SubscribeRepository subscribeRepository;
+    private final ImageRepository imageRepository;
 
     @Transactional
     public User modifyUser(long id, User user) {
@@ -41,15 +43,18 @@ public class UserService {
     }
 
     public UserProfileDto getUserProfileDto(Long pageUserId, PrincipalDetails principalDetails) {
-        User user = userRepository.findById(pageUserId)
-                .orElseThrow(() -> new CustomException("존재하지 않는 회원입니다."));
         Long requestUserId = principalDetails.getUser().getId();
+        UserProfileDto userProfileDto = userRepository.findUserProfile(pageUserId, requestUserId)
+                .orElseThrow(() -> new CustomException("존재하지 않는 회원입니다."));
 
-        UserProfileDto userProfileDto = new UserProfileDto(user);
-        userProfileDto.setImageCount(user.getImages().size());
+        List<ProfileImageDto> profileImageDtos = imageRepository.findProfileImageDtos(pageUserId);
+
         userProfileDto.setPageOwnerState(pageUserId.equals(requestUserId));
-        userProfileDto.setSubscribeCount(subscribeRepository.countSubscribeBy(pageUserId)); // 구독자 수
-        userProfileDto.setSubscribeState(subscribeRepository.getSubScribeState(requestUserId, pageUserId) == 1); // 현재 요청한 사람과 구독여부
+        userProfileDto.setImageList(profileImageDtos);
+        userProfileDto.setImageCount(profileImageDtos.size());
+
+//        userProfileDto.setSubscribeCount(subscribeRepository.countSubscribeBy(pageUserId)); // 구독자 수
+//        userProfileDto.setSubscribeState(subscribeRepository.getSubScribeState(requestUserId, pageUserId) == 1); // 현재 요청한 사람과 구독여부
 
         return userProfileDto;
     }

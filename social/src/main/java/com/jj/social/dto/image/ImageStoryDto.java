@@ -1,4 +1,4 @@
-package com.jj.social.dto;
+package com.jj.social.dto.image;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

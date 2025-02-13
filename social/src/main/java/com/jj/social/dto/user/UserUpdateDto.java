@@ -1,4 +1,4 @@
-package com.jj.social.dto;
+package com.jj.social.dto.user;
 
 import com.jj.social.entity.User;
 import lombok.Data;

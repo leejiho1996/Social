@@ -3,7 +3,7 @@ package com.jj.social.controller.api;
 import com.jj.social.auth.PrincipalDetails;
 import com.jj.social.dto.CMRespDto;
 import com.jj.social.dto.SubscribeDto;
-import com.jj.social.dto.UserUpdateDto;
+import com.jj.social.dto.user.UserUpdateDto;
 import com.jj.social.entity.User;
 import com.jj.social.handler.exception.CustomValidationApiException;
 import com.jj.social.service.SubscribeService;

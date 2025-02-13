@@ -1,10 +1,9 @@
 package com.jj.social.controller;
 
 import com.jj.social.auth.PrincipalDetails;
-import com.jj.social.dto.ImageDto;
-import com.jj.social.entity.User;
+import com.jj.social.dto.image.ImageDto;
+import com.jj.social.dto.image.PopularImageDto;
 import com.jj.social.handler.exception.CustomValidationException;
-import com.jj.social.repository.ImageRepository;
 import com.jj.social.repository.UserRepository;
 import com.jj.social.service.ImageService;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +11,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -28,14 +27,17 @@ public class ImageController {
         return "image/story";
     }
 
-    @GetMapping("/image/popular")
-    public String popular() {
-        return "image/popular";
-    }
 
     @GetMapping("/image/upload")
     public String upload() {
         return "image/upload";
+    }
+
+    @GetMapping("/image/popular")
+    public String popular(Model model) {
+        List<PopularImageDto> popularImageDtos = imageService.loadPopularImage();
+        model.addAttribute("imageDto", popularImageDtos);
+        return "image/popular";
     }
 
     @PostMapping("/image")
@@ -50,5 +52,4 @@ public class ImageController {
 
         return "redirect:/user/" + principalDetails.getUser().getId();
     }
-
 }

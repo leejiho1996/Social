@@ -2,8 +2,7 @@ package com.jj.social.controller.api;
 
 import com.jj.social.auth.PrincipalDetails;
 import com.jj.social.dto.CMRespDto;
-import com.jj.social.dto.ImageStoryDto;
-import com.jj.social.entity.Image;
+import com.jj.social.dto.image.ImageStoryDto;
 import com.jj.social.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

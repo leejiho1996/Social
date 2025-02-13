@@ -1,4 +1,4 @@
-package com.jj.social.dto;
+package com.jj.social.dto.image;
 
 import com.jj.social.entity.Image;
 import com.jj.social.entity.User;

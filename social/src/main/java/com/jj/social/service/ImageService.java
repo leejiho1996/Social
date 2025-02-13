@@ -1,14 +1,12 @@
 package com.jj.social.service;
 
 import com.jj.social.auth.PrincipalDetails;
-import com.jj.social.dto.ImageDto;
-import com.jj.social.dto.ImageStoryDto;
+import com.jj.social.dto.image.ImageDto;
+import com.jj.social.dto.image.ImageStoryDto;
+import com.jj.social.dto.image.PopularImageDto;
 import com.jj.social.entity.*;
 import com.jj.social.repository.ImageRepository;
 import com.jj.social.repository.LikesRepository;
-import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileOutputStream;
-import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,6 +61,9 @@ public class ImageService {
         imageRepository.save(image);
     }
 
+    /**
+     * 메인페이지 접속시 나오는 게시글 정보 load
+     */
     public List<ImageStoryDto> loadImageStory(Long principalId, Pageable pageable) {
         List<Object[]> results = imageRepository.findImagesWithLikesAndSubscriptions(principalId, pageable);
 
@@ -79,6 +79,16 @@ public class ImageService {
                 (Boolean) result[3])
         ).toList();
     }
+
+    public List<PopularImageDto> loadPopularImage() {
+         return imageRepository.findPopularImages();
+    }
+
+
+
+    /**
+     * ImageStoryDto queryDsl style
+     */
 
 //    public List<ImageStoryDto> loadImageStory(Long principalId, Pageable pageable) {
 //        JPAQuery<ImageStoryDto> query = new JPAQuery<>(em);
