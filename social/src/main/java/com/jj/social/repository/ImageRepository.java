@@ -16,16 +16,16 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
     // 메인 페이지 접속시 보여질 이미지 정보
     @Query("""
-    SELECT i, u, COUNT(l.id),
-           CASE WHEN COUNT(myLike.id) > 0 THEN true ELSE false END
-    FROM Image i
-    JOIN FETCH i.user u
-    LEFT JOIN Likes l ON l.image = i
-    LEFT JOIN Likes myLike ON myLike.image = i AND myLike.user.id = :userId
-    WHERE u.id IN (
-        SELECT s.toUser.id FROM Subscribe s WHERE s.fromUser.id = :userId
+    select i, u, COUNT(l.id),
+           case when COUNT(myLike.id) > 0 then true else false end
+    from Image i
+    join fetch i.user u
+    left join Likes l on l.image = i
+    left join Likes myLike on myLike.image = i and myLike.user.id = :userId
+    where u.id IN (
+        select s.toUser.id from Subscribe s where s.fromUser.id = :userId
     )
-    GROUP BY i, u
+    group by i, u
     """)
     List<Object[]> findImagesWithLikesAndSubscriptions(@Param("userId") Long userId, Pageable pageable);
 

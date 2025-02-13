@@ -17,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -55,5 +56,20 @@ public class UserApiController {
         List<SubscribeDto> subscribeDto = subscribeService.subscribeList(principalDetails.getUser().getId(), pageUserId);
         return new ResponseEntity<>(
                 new CMRespDto<>(1, "구독정보 리스트 가져오기 성공", subscribeDto), HttpStatus.OK);
+    }
+
+    @PutMapping("/user/{pageUserId}/profileImageUrl")
+    public ResponseEntity<?> changeProfileImage(@PathVariable Long pageUserId,
+                                                @AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                // MultipartFile로 받을 때, 변수명을 해당 form태그의 name명과 일치시켜야 한다
+                                                MultipartFile profileImageFile ) {
+
+        User user = userService.changeProfileImage(principalDetails.getUser().getId(), pageUserId, profileImageFile);
+        principalDetails.setUser(user);
+
+        return new ResponseEntity<>(
+                new CMRespDto<>(1, "프로필사진 변경성공", null), HttpStatus.OK
+        );
+
     }
 }

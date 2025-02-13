@@ -26,10 +26,10 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
     @Query(value = "select like.image.id from Likes like where like.user.id = :userId")
     HashSet<Long> findUserId(long userId);
 
-    @Query(value = "SELECT post_id, COUNT(*) AS like_count " +
-            "FROM likes " +
-            "WHERE post_id IN (:postIds) " +
-            "GROUP BY post_id",
+    @Query(value = "select post_id, count(*) as like_count " +
+            "from likes " +
+            "where post_id in (:postIds) " +
+            "group by post_id",
             nativeQuery = true)
     List<Object[]> findLikeCount(@Param("postIds") List<Long> postIds);
 }

@@ -17,7 +17,7 @@
 						id="userProfileImageInput" />
 				</form>
 
-				<img class="profile-image" src="#"
+				<img class="profile-image" src="/upload/${userDto.profileImageUri}"
 					onerror="this.src='/images/person.jpeg'" id="userProfileImage" />
 			</div>
 		</div>
@@ -37,7 +37,7 @@
 						</c:when>
 						<c:otherwise>
 							<c:choose>
-								<c:when test="${userDto.subscribeState}">
+								<c:when test="${userDto.subscribeState eq 1}">
 									<button class="cta blue" onclick="toggleSubscribe(${userDto.userId}, this)">구독취소</button>
 								</c:when>
 								<c:otherwise>
@@ -107,7 +107,7 @@
 <div class="modal-image" onclick="modalImage()">
 	<div class="modal">
 		<p>프로필 사진 바꾸기</p>
-		<button onclick="profileImageUpload()">사진 업로드</button>
+		<button onclick="profileImageUpload(${userDto.userId}, ${principal.user.id})">사진 업로드</button>
 		<button onclick="closePopup('.modal-image')">취소</button>
 	</div>
 </div>

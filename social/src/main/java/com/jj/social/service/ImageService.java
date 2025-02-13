@@ -45,7 +45,7 @@ public class ImageService {
         UUID uuid = UUID.randomUUID();
         String originFilename = ImageDto.getFile().getOriginalFilename();
         String extension = originFilename.substring(originFilename.lastIndexOf("."));
-        String imgName = uuid.toString() + extension; // UUID화 된 이미지 이름
+        String imgName = uuid + extension; // UUID화 된 이미지 이름
 
         String imgFilePath = filePath + imgName;
 

@@ -15,6 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     public Optional<User> findByEmail(String email);
 
+    // 유저 프로필 페이지 정보 로딩 (dto의 생성자와 순서 같게 해야함)
     @Query(value = "SELECT i.id AS userId, i.bio, i.nickname, i.profileImageUri, i.username, i.website, " +
             "COUNT(s1.toUserId) AS subscribeCount, " +
             "CASE WHEN COUNT(DISTINCT s2.fromUserId) > 0 THEN 1 ELSE 0 END AS subscribeState " +
