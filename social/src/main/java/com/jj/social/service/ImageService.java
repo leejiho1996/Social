@@ -1,10 +1,12 @@
 package com.jj.social.service;
 
 import com.jj.social.auth.PrincipalDetails;
+import com.jj.social.dto.comment.CommentStoryDto;
 import com.jj.social.dto.image.ImageDto;
 import com.jj.social.dto.image.ImageStoryDto;
 import com.jj.social.dto.image.PopularImageDto;
 import com.jj.social.entity.*;
+import com.jj.social.repository.CommentRepository;
 import com.jj.social.repository.ImageRepository;
 import com.jj.social.repository.LikesRepository;
 import jakarta.persistence.EntityManager;
@@ -16,8 +18,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,6 +33,7 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final LikesRepository likesRepository;
     private final EntityManager em;
+    private final CommentRepository commentRepository;
 
     @Value("${file.path}")
     private String filePath;
@@ -67,17 +73,43 @@ public class ImageService {
     public List<ImageStoryDto> loadImageStory(Long principalId, Pageable pageable) {
         List<Object[]> results = imageRepository.findImagesWithLikesAndSubscriptions(principalId, pageable);
 
-        return results.stream().map(result -> new ImageStoryDto(
-                ((Image) result[0]).getId(),
-                ((Image) result[0]).getCaption(),
-                ((Image) result[0]).getOriImgName(),
-                ((Image) result[0]).getImgName(),
-                ((User) result[1]).getId(),
-                ((User) result[1]).getUsername(),
-                ((User) result[1]).getProfileImageUri(),
-                ((Number) result[2]).intValue(),
-                (Boolean) result[3])
+        List<ImageStoryDto> imageStoryDtos =  results.stream().map(result -> {
+            Image image = (Image) result[0];
+            User user = (User) result[1];
+            return new ImageStoryDto(
+                    image,
+                    user,
+                    ((Number) result[2]).intValue(),
+                    (Boolean) result[3]);
+        }
         ).toList();
+
+        // imageId를 뽑아 리스트를 만든다
+        List<Long> imageIds = imageStoryDtos.stream()
+                .map(ImageStoryDto::getId)
+                .toList();
+
+        log.info("imageIds: {}", imageIds);
+
+        // imageId의 댓글 목록을 가져온다
+        List<CommentStoryDto> comments = commentRepository.findAllByImageList(imageIds);
+        log.info("comments = {}", comments);
+
+        // 해당 댓글들을 Map을 이용해 이미지별 댓글들로 매핑한다
+        Map<Long, List<CommentStoryDto>> commentMap = comments.stream()
+                .collect(Collectors.groupingBy(CommentStoryDto::getImageId));
+        log.info("commentMap = {}", commentMap);
+
+        for (ImageStoryDto imageStoryDto : imageStoryDtos) {
+            if (commentMap.containsKey(imageStoryDto.getId())) {
+                imageStoryDto.setCommentList(commentMap.get(imageStoryDto.getId()));
+            } else {
+                imageStoryDto.setCommentList(new ArrayList<CommentStoryDto>());
+            }
+        }
+
+        return imageStoryDtos;
+
     }
 
     public List<PopularImageDto> loadPopularImage() {

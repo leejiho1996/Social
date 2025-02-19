@@ -6,8 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Builder
@@ -30,6 +32,16 @@ public class Image {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private User user;
+
+    @OneToMany(mappedBy = "image")
+    @JsonIgnore
+    @BatchSize(size = 50)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "image")
+    @JsonIgnore
+    @BatchSize(size = 50)
+    private List<Likes> likes;
 
     private LocalDateTime createDate;
 
