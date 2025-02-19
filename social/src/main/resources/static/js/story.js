@@ -30,6 +30,9 @@ function storyLoad() {
 storyLoad();
 
 function getStoryItem(image) {
+	let principalId = $("#principalId").val();
+	console.log(principalId);
+
 	let item = `
 	<div class="story-list__item">
 		<div class="sl__item__header">
@@ -73,12 +76,12 @@ function getStoryItem(image) {
 						<b>${comment.nickname} :</b> ${comment.content}
 					</p>`;
 
-		// if (principalId == comment.userId) {
-		// 	item +=
-		// 		`<button onclick="deleteComment(${comment.id})">
-		// 		    <i class="fas fa-times"></i>
-        //         </button>`;
-		// }
+		if (principalId == comment.userId) {
+			item +=
+				`<button onclick="deleteComment(${comment.id})">
+				    <i class="fas fa-times"></i>
+                </button>`;
+		}
 		item += `
 			</div>`;
 	});
@@ -182,13 +185,16 @@ function addComment(imageId) {
 		let content = `
 			<div class="sl__item__contents__comment" id="storyCommentItem-${comment.id}"> 
 			    <p>
-			        <b>${comment.user.nickname} :</b>
+			        <b>${comment.nickname} :</b>
 			        ${comment.content}
 			    </p>
-			    <button><i class="fas fa-times"></i></button>
-			</div>`;
+			    <button onclick="deleteComment(${comment.id})">
+                <i class="fas fa-times"></i>
+                </button>
+			</div>
+    	`;
 
-		commentList.prepend(content);
+		commentList.append(content);
 		$(`#storyCommentInput-${imageId}`).prop("value", "");
 
 	}).fail(error => {
@@ -197,8 +203,17 @@ function addComment(imageId) {
 }
 
 // (5) 댓글 삭제
-function deleteComment() {
-
+function deleteComment(commentId) {
+	$.ajax({
+		type: "delete",
+		url: `/api/comment/${commentId}`,
+		dataType: "json"
+	}).done(res => {
+		console.log("댓글삭제 성공", res);
+		$(`#storyCommentItem-${commentId}`).remove();
+	}).fail(error => {
+		console.log("댓글삭제 실패", error);
+	});
 }
 
 

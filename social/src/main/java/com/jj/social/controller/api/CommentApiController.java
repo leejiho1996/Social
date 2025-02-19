@@ -26,12 +26,16 @@ public class CommentApiController {
         log.info("댓글쓰기로직 성공 = {}", commentDto.toString());
         Comment comment = commentService.writeComment(commentDto, principalDetails);
 
-        return new ResponseEntity<>(new CMRespDto<>(1, "댓글쓰기 성공", comment), HttpStatus.OK);
+        return new ResponseEntity<>(
+                new CMRespDto<>(1, "댓글쓰기 성공", comment), HttpStatus.OK
+        );
     }
 
     @DeleteMapping("/comment/{id}")
     public ResponseEntity<?> deleteComment(@PathVariable Long id) {
         commentService.deleteComment(id);
-        return null;
+        return new ResponseEntity<>(
+                new CMRespDto<>(1, "댓글 삭제 성공", null), HttpStatus.OK
+        );
     }
 }

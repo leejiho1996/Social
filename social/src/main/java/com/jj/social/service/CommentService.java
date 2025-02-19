@@ -4,6 +4,7 @@ import com.jj.social.auth.PrincipalDetails;
 import com.jj.social.dto.comment.CommentDto;
 import com.jj.social.entity.Comment;
 import com.jj.social.entity.Image;
+import com.jj.social.handler.exception.CustomApiException;
 import com.jj.social.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,10 @@ public class CommentService {
 
     @Transactional
     public void deleteComment(Long commentId) {
-        return;
+        try {
+            commentRepository.deleteById(commentId);
+        } catch (Exception e) {
+            throw new CustomApiException(e.getMessage());
+        }
     }
 }
