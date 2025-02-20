@@ -4,13 +4,19 @@ import com.jj.social.auth.PrincipalDetails;
 import com.jj.social.dto.CMRespDto;
 import com.jj.social.dto.comment.CommentDto;
 import com.jj.social.entity.Comment;
+import com.jj.social.handler.exception.CustomValidationApiException;
 import com.jj.social.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api")
@@ -21,9 +27,9 @@ public class CommentApiController {
     private final CommentService commentService;
 
     @PostMapping("/comment")
-    public ResponseEntity<?> saveComment(@RequestBody CommentDto commentDto,
+    public ResponseEntity<?> saveComment(@Valid @RequestBody CommentDto commentDto, BindingResult bindingResult,
                                          @AuthenticationPrincipal PrincipalDetails principalDetails) {
-        log.info("댓글쓰기로직 성공 = {}", commentDto.toString());
+
         Comment comment = commentService.writeComment(commentDto, principalDetails);
 
         return new ResponseEntity<>(

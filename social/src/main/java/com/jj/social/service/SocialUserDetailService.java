@@ -21,8 +21,6 @@ public class SocialUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
-        log.info("Password Match : {}", passwordEncoder.matches("1234", user.getPassword()));
-        log.info("logged in user: {}", user);
         return new PrincipalDetails(user);
     }
 }

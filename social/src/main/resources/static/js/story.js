@@ -31,7 +31,7 @@ storyLoad();
 
 function getStoryItem(image) {
 	let principalId = $("#principalId").val();
-	console.log(principalId);
+	// console.log(principalId);
 
 	let item = `
 	<div class="story-list__item">

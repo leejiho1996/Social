@@ -37,14 +37,6 @@ public class UserApiController {
                                BindingResult bindingResult,
                                @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errorMap = new HashMap<>();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errorMap.put(error.getField(), error.getDefaultMessage());
-                System.out.println(error.getDefaultMessage());
-            }
-            throw new CustomValidationApiException("유효성검사 실패함", errorMap);
-        }
         User userEntity = userService.modifyUser(id, userUpdateDto.toEntity());
         principalDetails.setUser(userEntity);
         return new CMRespDto<>(1, "회원수정완료", userEntity);

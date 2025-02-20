@@ -2,6 +2,7 @@ package com.jj.social.service;
 
 import com.jj.social.dto.SignupDto;
 import com.jj.social.entity.User;
+import com.jj.social.handler.exception.CustomValidationException;
 import com.jj.social.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.validation.Valid;
@@ -24,9 +25,9 @@ public class AuthService {
 
     public User registerUser(SignupDto signupDto) {
 
-        Optional<User> byEmail = userRepository.findByEmail(signupDto.getEmail());
-        if (byEmail.isPresent()) {
-            throw new EntityExistsException();
+        User byUsername = userRepository.findByUsername(signupDto.getUsername());
+        if (byUsername != null) {
+            throw new CustomValidationException("이미 있는 아이디 입니다", null);
         }
 
         // password 인코딩
