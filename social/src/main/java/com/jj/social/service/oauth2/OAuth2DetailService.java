@@ -1,5 +1,8 @@
 package com.jj.social.service.oauth2;
 
+import com.jj.social.auth.FacebookInfo;
+import com.jj.social.auth.GoogleInfo;
+import com.jj.social.auth.OAuth2UserInfo;
 import com.jj.social.auth.PrincipalDetails;
 import com.jj.social.entity.User;
 import com.jj.social.repository.UserRepository;
@@ -23,31 +26,41 @@ public class OAuth2DetailService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        Map<String, Object> userInfo = oAuth2User.getAttributes();
+        return processOAuth2User(userRequest, oAuth2User);
+    }
 
-        for (String s : userInfo.keySet()) {
-            System.out.println(userInfo.get(s));
-        }
+    private OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oAuth2User) {
+        OAuth2UserInfo oAuth2UserInfo = null;
+        if (userRequest.getClientRegistration().getClientName().equals("Google")) {
+            oAuth2UserInfo = new GoogleInfo(oAuth2User.getAttributes());
+        } else if (userRequest.getClientRegistration().getClientName().equals("Facebook")) {
+            oAuth2UserInfo = new FacebookInfo(oAuth2User.getAttributes());
+//        } else if (userRequest.getClientRegistration().getClientName().equals("Naver")) {
+//            oAuth2UserInfo = new NaverInfo(oauth2User.getAttributes());
+//        } else if (userRequest.getClientRegistration().getClientName().equals("Kakao")) {
+//            oAuth2UserInfo = new KakaoInfo(oauth2User.getAttributes());
+    }
 
-        String username = "facebook__" + userInfo.get("id");
+        String username = oAuth2UserInfo.getUsername();
         String password = passwordEncoder.encode(UUID.randomUUID().toString());
-        String email = (String) userInfo.get("email");
-        String name = (String) userInfo.get("name");
+        String email = oAuth2UserInfo.getEmail();
+        String name = oAuth2UserInfo.getName();
 
         User findedUser = userRepository.findByUsername(username);
 
         if (findedUser == null) {
             User user = User.builder()
                     .username(username)
-                    .password(password)
+                    .role("ROLE_USER")
                     .email(email)
                     .nickname(name)
-                    .role("ROLE_USER")
+                    .password(password)
                     .build();
 
-            return new PrincipalDetails(userRepository.save(user), userInfo);
+            findedUser = userRepository.save(user);
+            return new PrincipalDetails(findedUser, oAuth2UserInfo.getAttributes());
         } else {
-            return new PrincipalDetails(findedUser, oAuth2User.getAttributes());
+            return new PrincipalDetails(findedUser, oAuth2UserInfo.getAttributes());
         }
     }
 }

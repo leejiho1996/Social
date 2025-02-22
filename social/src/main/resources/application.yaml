@@ -54,6 +54,13 @@ spring:
               - public_profile
               - email
 
+          google:
+            client-id: 70754700163-9httk8h9oe1ovvg7fph9d3do9ebjfjq6.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
+
 file:
   path: C:/social/springbootwork/upload/
 
