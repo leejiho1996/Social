@@ -48,15 +48,15 @@ spring:
       client:
         registration:
           facebook:
-            client-id: 28617683571210106
-            client-secret: 91794f10bc406d784de642b9bffee8e7
+            client-id: example
+            client-secret: example
             scope:
               - public_profile
               - email
 
           google:
-            client-id: 70754700163-9httk8h9oe1ovvg7fph9d3do9ebjfjq6.apps.googleusercontent.com
-            client-secret: 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
+            client-id: example
+            client-secret: example
             scope:
               - email
               - profile
