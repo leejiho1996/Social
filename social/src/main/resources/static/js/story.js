@@ -37,7 +37,7 @@ function getStoryItem(image) {
 	<div class="story-list__item">
 		<div class="sl__item__header">
 			<div>
-				<img class="profile-image" src="/upload/${image.profileImageUrl}"
+				<img class="profile-image" src="/upload/${image.profileImageUri}"
 					 onerror="this.src='/images/person.jpeg'" />
 			</div>
 			<div>${image.username}</div>

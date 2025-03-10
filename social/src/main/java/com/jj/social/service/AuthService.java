@@ -25,8 +25,8 @@ public class AuthService {
 
     public User registerUser(SignupDto signupDto) {
 
-        User byUsername = userRepository.findByUsername(signupDto.getUsername());
-        if (byUsername != null) {
+        Optional<User> byUsername = userRepository.findByEmail(signupDto.getEmail());
+        if (byUsername.isPresent()) {
             throw new CustomValidationException("이미 있는 아이디 입니다", null);
         }
 

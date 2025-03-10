@@ -7,6 +7,7 @@ import com.jj.social.auth.PrincipalDetails;
 import com.jj.social.entity.User;
 import com.jj.social.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OAuth2DetailService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -32,8 +34,10 @@ public class OAuth2DetailService extends DefaultOAuth2UserService {
     private OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oAuth2User) {
         OAuth2UserInfo oAuth2UserInfo = null;
         if (userRequest.getClientRegistration().getClientName().equals("Google")) {
+            log.info("구글 로그인 요청: {}", userRequest.getClientRegistration().getClientName());
             oAuth2UserInfo = new GoogleInfo(oAuth2User.getAttributes());
         } else if (userRequest.getClientRegistration().getClientName().equals("Facebook")) {
+            log.info("페이스북 로그인 요청: {}", userRequest.getClientRegistration().getClientName());
             oAuth2UserInfo = new FacebookInfo(oAuth2User.getAttributes());
 //        } else if (userRequest.getClientRegistration().getClientName().equals("Naver")) {
 //            oAuth2UserInfo = new NaverInfo(oauth2User.getAttributes());

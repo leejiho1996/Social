@@ -9,7 +9,7 @@ public class SubscribeDto {
 
     private String nickname;
 
-    private String profileImageUrl;
+    private String profileImageUri;
 
     // 로그인한 유저가 모달에서 확인한 유저를 구독했는지 확인
     private boolean subscribeState;

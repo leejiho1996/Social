@@ -67,11 +67,11 @@ function getSubscribeModalItem(u) {
 	let item = `
     <div class="subscribe__item" id="subscribeModalItem-1">
     <div class="subscribe__img">
-        <img src="/upload/${u.profileImageUrl}" onerror="this.src='/images/person.jpeg'" />
+        <img src="/upload/${u.profileImageUri}" onerror="this.src='/images/person.jpeg'" />
     </div>
-    <div class="subscribe__text">
-        <h2>${u.nickname}</h2>
-    </div>
+		<div class="subscribe__text">
+			<h2>${u.nickname}</h2>
+		</div>
     <div class="subscribe__btn">`;
 
 	if (!u.equalUserState) { // 로그인 유저와 모달의 유저가 동일 인물이 아닐때

@@ -27,7 +27,8 @@
 	<link rel="stylesheet" href="/css/upload.css">
 	<link rel="stylesheet" href="/css/update.css">
 	<link rel="shortcut icon" href="/images/insta.svg">
-	
+	<link rel="stylesheet" href="/css/chat.css">
+
 	<!-- Fontawesome -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css" />
 	<!-- Fonts -->
