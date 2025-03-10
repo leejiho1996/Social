@@ -1,3 +1,102 @@
+let stompClient = null;
+let currentRoomId = null;
+
+function connectWebSocket() {
+    const socket = new SockJS("/ws");
+    stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, () => {
+        console.log("웹 소켓 연결 성공");
+
+        if (currentRoodId) {
+            subscribeRoom(currentRoomId);
+        }
+    });
+}
+
+function subscribeRoom(roomId) {
+    if (stompClient && stompClient.connected) {
+        stompClient.subscribe(`/sub/chat/room/${roomId}`, (message) => {
+            const msg = JSON.parse(message.body);
+            const messageClass = msg.senderId === parseInt($("#principalId").val()) ? "sent" : "received";
+            const html = `<div class="message ${messageClass}">${msg.content}</div>`;
+            $(".chat-messages").append(html);
+        });
+    }
+    currentRoomId = roomId;
+}
+
+function loadChatRoom(roomId, nickname) {
+    // 1. 기존 메시지 지우고 UI 초기화
+    $(".chat-header h2").text(nickname);
+    $(".chat-messages").html("");
+
+    // 2. 메시지 내역 요청
+    $.ajax({
+        url: `/api/chat/room/${roomId}/messages`,
+        method: "GET",
+        dataType: "json"
+    }).done(res => {
+        res.messages.forEach(msg => {
+            const messageClass = msg.senderId === parseInt($("#principalId").val()) ? "sent" : "received";
+            const html = `<div class="message ${messageClass}">${msg.content}</div>`;
+            $(".chat-messages").append(html);
+        });
+
+        // 3. 스크롤 맨 아래로
+        const chatBox = $(".chat-messages");
+        chatBox.scrollTop(chatBox[0].scrollHeight);
+
+        // 4. 새로운 방 구독
+        if (currentRoomId !== roomId) {
+            currentRoomId = roomId;
+            subscribeRoom(roomId);
+        }
+    });
+}
+
+// 메시지 전송
+function sendMessage() {
+    const input = $(".chat-input input");
+    const content = input.val().trim();
+    if (!content || !currentRoomId) return;
+
+    const message = {
+        roomId: currentRoomId,
+        senderId: parseInt($("#principalId").val()),
+        content: content
+    };
+
+    stompClient.send("/pub/chat.sendMessage", {}, JSON.stringify(message));
+    input.val("");
+}
+
+
+// 엔터로 메시지 전송
+$(".chat-input input").keypress(function (e) {
+    if (e.key === "Enter") {
+        sendMessage();
+    }
+});
+
+// 채팅모달에서 채팅시작 버튼 클릭 시 실행
+function startChat(userId, nickname) {
+    $.ajax({
+        url: `/api/chat/room`,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ targetUserId: userId }),
+    }).done(res => {
+        const roomId = res.roomId;
+        loadChatRoom(roomId, nickname); // 👉 채팅 내용 바꾸기
+    }).fail(err => {
+        alert("채팅방 연결 실패");
+        console.error(err);
+    });
+}
+
+// 모달 부분
+// ================================================================
 const modal = document.getElementById("chatModal");
 const span = document.querySelector(".close");
 
@@ -47,69 +146,4 @@ window.onclick = function (event) {
         modal.style.display = "none";
     }
 };
-
-// 채팅모달에서 채팅시작 버튼 클릭 시 실행
-function startChat(userId, nickname) {
-    $.ajax({
-        url: `/api/chat/room`,
-        method: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({ targetUserId: userId }),
-    }).done(res => {
-        const roomId = res.roomId;
-        loadChatRoom(roomId, nickname); // 👉 채팅 내용 바꾸기
-    }).fail(err => {
-        alert("채팅방 연결 실패");
-        console.error(err);
-    });
-}
-
-function loadChatRoom(roomId, nickname) {
-    $.ajax({
-        url: `/api/chat/room/${roomId}/messages`,
-        method: "GET",
-        dataType: "json"
-    }).done(res => {
-        $(".chat-header h2").text(nickname); // 제목 변경
-
-        const chatBox = $(".chat-messages");
-        chatBox.html(""); // 기존 내용 초기화
-
-        res.messages.forEach(msg => {
-            const messageClass = msg.senderId === parseInt($("#principalId").val()) ? "sent" : "received";
-            const messageHtml = `<div class="message ${messageClass}">${msg.content}</div>`;
-            chatBox.append(messageHtml);
-        });
-
-        // 스크롤 아래로
-        chatBox.scrollTop(chatBox[0].scrollHeight);
-
-        // 선택된 채팅방 스타일도 반영하려면 추가로 처리 가능
-    }).fail(err => {
-        console.log("메시지 로딩 실패", err);
-    });
-}
-
-// 메시지 전송
-function sendMessage() {
-    const chatBox = $(".chat-messages");
-    const input = $(".chat-input input");
-    const message = input.val().trim();
-
-    if (message === "") return; // 빈 메시지는 무시
-    // 메시지 박스 추가
-    const messageHtml = `<div class="message sent">${message}</div>`;
-    chatBox.append(messageHtml);
-    // 입력창 비우기
-    input.val("");
-    // 스크롤 맨 아래로
-    chatBox.scrollTop(chatBox[0].scrollHeight);
-}
-
-// 엔터로 메시지 전송
-$(".chat-input input").keypress(function (e) {
-    if (e.key === "Enter") {
-        sendMessage();
-    }
-});
 
